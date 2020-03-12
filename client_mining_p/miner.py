@@ -69,9 +69,7 @@ if __name__ == '__main__':
             print("Response returned:")
             print(r)
             break
-        
-        # TODO: Get the block from `data` and use it to look for a new proof
-        # new_proof = ???
+
         block = data['last_block']
         new_proof = proof_of_work(block)
 

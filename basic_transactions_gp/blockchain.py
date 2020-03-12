@@ -14,7 +14,7 @@ class Blockchain(object):
         # Create the genesis block
         self.new_block(previous_hash=1, proof=100)
 
-    def new_transaction(self, sender, receipient, amount):
+    def new_transaction(self, sender, recipient, amount):
     	"""
 		:param sender: <str> Address of the Recipient
     	:param recipient: <str> Address of the Recipient
@@ -145,7 +145,7 @@ def receive_transaction():
     values = request.get_json()
     required = ['sender', 'recipient', 'amount']
     if not all(k in values for k in required):
-        response = {'message': Missing values}
+        response = {'message': 'Missing values'}
         return jsonify(response), 400
 
     blockchain.new_transaction(values['sender'], 
@@ -159,36 +159,36 @@ def mine():
 	
 	# TODO: handle non json request
 
-	values = request.get_json()
+    values = request.get_json()
 
-	required = ['proof', 'id']
-	if not all(k in values for k in required):
-		response = {'message': 'Missing values'}
-		return jsonify(response), 400
+    required = ['proof', 'id']
+    if not all(k in values for k in required):
+        response = {'message': 'Missing values'}
+        return jsonify(response), 400
 
-	submitted_proof = values['proof']
+    submitted_proof = values['proof']
 
-    block_string = json.dumps(blockchain.last_block, stort_keys = True)
+    block_string = json.dumps(blockchain.last_block, sort_keys = True)
     if blockchain.valid_proof(block_string, submitted_proof):
 
-    	blockchain.new_transaction('0', values['id'], 1)
+        blockchain.new_transaction('0', values['id'], 1)
 
 	    # Forge the new Block by adding it to the chain with the proof
-	    previous_hash = blockchain.hash(blockchain.last_block)
-	    block = blockchain.new_block(proof, previous_hash)
+        previous_hash = blockchain.hash(blockchain.last_block)
+        block = blockchain.new_block(submitted_proof, previous_hash)
 
-	    response = {
-	        'new_block': block
-	    }
+        response = {
+            'new_block': block
+        }
 
-	    return jsonify(response), 200
+        return jsonify(response), 200
 	
-	else:
-		response = {
-			'message':'proof was invalid or late'
-		}
+    else:
+        response = {
+            'message':'proof was invalid or late'
+        }
 
-		return jsonify(response), 200
+        return jsonify(response), 200
 
 
 @app.route('/chain', methods=['GET'])
